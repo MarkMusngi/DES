@@ -1,0 +1,23 @@
+<div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-md p-8 bg-white rounded-xl shadow-2xl border-t-4 border-indigo-600">
+        <h1 class="text-3xl font-bold text-center text-indigo-700">System Login</h1>
+        <p class="text-center text-gray-500 mt-2 text-sm">Interacting with: **{{ service_name }}** (Port 5001)</p>
+        <form class="mt-8 space-y-6">
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                <input type="text" id="username" placeholder="student or faculty" required class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+            </div>
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" id="password" placeholder="pass or admin" required class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+            </div>
+            <button type="submit" class="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md hover:shadow-lg">Sign In (Get JWT)</button>
+        </form>
+        <div class="mt-6 text-center">
+            <p class="text-xs text-gray-500 border-t pt-4">
+                If the **Auth Service** (Node 2) fails, no new sessions can be started. Existing sessions may remain valid depending on local validation logic.
+            </p>
+            <a href="/" class="mt-4 inline-block text-sm text-indigo-500 hover:underline font-medium">&larr; Back to Dashboard</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,33 @@
+<div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-lg p-8 bg-white rounded-xl shadow-2xl border-t-4 border-red-600">
+        <h1 class="text-3xl font-bold text-center text-red-700">Faculty Grade Submission</h1>
+        <p class="text-center text-gray-500 mt-2 text-sm">Interacting with: **{{ service_name }}** (Port 5004)</p>
+        
+        <form class="mt-8 space-y-6 text-left">
+            <div>
+                <label for="course" class="block text-sm font-medium text-gray-700">Course ID</label>
+                <input type="text" id="course" value="CS101" class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 shadow-sm">
+            </div>
+
+            <div>
+                <label for="grades" class="block text-sm font-medium text-gray-700">Grades JSON Batch</label>
+                <textarea id="grades" rows="8" class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 font-mono text-xs shadow-sm" placeholder='Enter grades as a JSON array...'>
+[
+    {"student_id": 101, "final_grade": "A"},
+    {"student_id": 102, "final_grade": "B-"},
+    {"student_id": 103, "final_grade": "A+"}
+]
+                </textarea>
+            </div>
+            
+            <button type="submit" class="w-full py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition duration-150 shadow-md hover:shadow-lg">Upload Grades</button>
+        </form>
+        
+        <div class="mt-6 text-center">
+            <p class="text-xs text-gray-500 border-t pt-4">
+                The **Grades Write Service** (Node 5) is isolated from the read functionality (Node 4), ensuring that faculty can always submit grades efficiently.
+            </p>
+            <a href="/" class="mt-4 inline-block text-sm text-red-500 hover:underline font-medium">&larr; Back to Dashboard</a>
+        </div>
+    </div>
+</div>

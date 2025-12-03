@@ -1,0 +1,31 @@
+<div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-3xl p-8 bg-white rounded-xl shadow-2xl border-t-4 border-green-600">
+        <h1 class="text-3xl font-bold text-center text-green-700">Course Catalog</h1>
+        <p class="text-center text-gray-500 mt-2 text-sm">Interacting with: **{{ service_name }}** (Port 5002)</p>
+        <div class="mt-8 text-left space-y-4">
+            <p class="font-semibold text-lg text-gray-700">Available Courses:</p>
+            <div class="overflow-hidden border border-gray-200 rounded-lg shadow-sm">
+                <ul class="divide-y divide-gray-100">
+                    <li class="p-4 flex justify-between items-center hover:bg-green-50">
+                        <span>**CS101**: Intro to Distributed Systems (28/30)</span> 
+                        <button class="text-sm bg-green-500 text-white px-3 py-1 rounded-full hover:bg-green-600 transition">Enroll</button>
+                    </li>
+                    <li class="p-4 flex justify-between items-center hover:bg-green-50">
+                        <span>**MATH203**: Calculus II (45/50)</span> 
+                        <button class="text-sm bg-green-500 text-white px-3 py-1 rounded-full hover:bg-green-600 transition">Enroll</button>
+                    </li>
+                    <li class="p-4 flex justify-between items-center bg-gray-100 text-gray-500">
+                        <span>**ENG100**: Academic Writing (Full)</span> 
+                        <span class="text-sm text-red-500 font-medium">Closed</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="mt-6 text-center">
+            <p class="text-xs text-gray-500 border-t pt-4">
+                If the **Course Service** (Node 3) fails, students cannot enroll or view the catalog, but they can still check grades or faculty can upload new grades.
+            </p>
+            <a href="/" class="mt-4 inline-block text-sm text-green-500 hover:underline font-medium">&larr; Back to Dashboard</a>
+        </div>
+    </div>
+</div>
