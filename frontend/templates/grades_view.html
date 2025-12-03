@@ -1,0 +1,32 @@
+<div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-xl p-8 bg-white rounded-xl shadow-2xl border-t-4 border-blue-600">
+        <h1 class="text-3xl font-bold text-center text-blue-700">Student Grades History</h1>
+        <p class="text-center text-gray-500 mt-2 text-sm">Interacting with: **{{ service_name }}** (Port 5003)</p>
+        
+        <div class="mt-8 text-left">
+            <p class="font-semibold text-lg text-gray-700">User 101 Grades:</p>
+            <div class="overflow-x-auto mt-2">
+                <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden shadow-sm">
+                    <thead class="bg-blue-50">
+                        <tr>
+                            <th class="px-6 py-3 text-xs font-medium text-blue-700 uppercase tracking-wider text-left">Course</th>
+                            <th class="px-6 py-3 text-xs font-medium text-blue-700 uppercase tracking-wider text-center">Grade</th>
+                            <th class="px-6 py-3 text-xs font-medium text-blue-700 uppercase tracking-wider text-left">Semester</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-100">
+                        <tr><td class="px-6 py-4 whitespace-nowrap">HIST101</td><td class="px-6 py-4 whitespace-nowrap text-center font-bold text-green-600">A-</td><td class="px-6 py-4 whitespace-nowrap">Fall 2023</td></tr>
+                        <tr><td class="px-6 py-4 whitespace-nowrap">CS100</td><td class="px-6 py-4 whitespace-nowrap text-center font-bold text-blue-600">B+</td><td class="px-6 py-4 whitespace-nowrap">Fall 2023</td></tr>
+                        <tr><td class="px-6 py-4 whitespace-nowrap">MATH101</td><td class="px-6 py-4 whitespace-nowrap text-center font-bold text-green-600">A</td><td class="px-6 py-4 whitespace-nowrap">Spring 2024</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="mt-6 text-center">
+            <p class="text-xs text-gray-500 border-t pt-4">
+                If the **Grades Read Service** (Node 4) fails, students cannot view grades, but faculty can still upload new grades (Node 5).
+            </p>
+            <a href="/" class="mt-4 inline-block text-sm text-blue-500 hover:underline font-medium">&larr; Back to Dashboard</a>
+        </div>
+    </div>
+</div>
