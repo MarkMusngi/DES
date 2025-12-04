@@ -24,6 +24,12 @@ def courses_view():
     """Serves the course view page, interacting with the Course Service."""
     return render_template('courses.html', service_name="Course Service Node")
 
+@app.route('/enroll')
+def enroll_page_view():
+    """Serves the dedicated enrollment page (simulating a new Enrollment Service node)."""
+    return render_template('enroll.html', 
+                           service_name="Enrollment Service Node")
+
 @app.route('/my_grades')
 def grades_view():
     """Serves the student grades view page, interacting with the Grades Read Service."""

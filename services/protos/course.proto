@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package course;
+
+// Course Service Definition
+service CourseService {
+    // Get all available courses
+    rpc GetCourses(GetCoursesRequest) returns (GetCoursesResponse);
+    
+    // Get specific course details
+    rpc GetCourseDetails(CourseRequest) returns (CourseResponse);
+}
+
+// Request Messages
+message GetCoursesRequest {
+    // Empty - gets all courses
+}
+
+message CourseRequest {
+    string course_id = 1;
+}
+
+// Response Messages
+message CourseInfo {
+    string course_id = 1;
+    string name = 2;
+    int32 capacity = 3;
+    int32 enrolled = 4;
+    bool is_open = 5;
+}
+
+message GetCoursesResponse {
+    string status = 1;
+    string message = 2;
+    repeated CourseInfo courses = 3;
+}
+
+message CourseResponse {
+    string status = 1;
+    string message = 2;
+    CourseInfo course = 3;
+}

@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package enrollment;
+
+// Enrollment Service Definition
+service EnrollmentService {
+    // Enroll a student in a course
+    rpc EnrollInCourse(EnrollRequest) returns (EnrollResponse);
+    
+    // Get student's enrollments
+    rpc GetStudentEnrollments(StudentRequest) returns (EnrollmentsResponse);
+}
+
+// Request Messages
+message EnrollRequest {
+    string token = 1;
+    string course_id = 2;
+}
+
+message StudentRequest {
+    string token = 1;
+}
+
+// Response Messages
+message EnrollResponse {
+    string status = 1;
+    string message = 2;
+}
+
+message EnrollmentInfo {
+    string course_id = 1;
+    string course_name = 2;
+    string enrollment_date = 3;
+}
+
+message EnrollmentsResponse {
+    string status = 1;
+    string message = 2;
+    repeated EnrollmentInfo enrollments = 3;
+}

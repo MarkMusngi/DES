@@ -19,22 +19,32 @@
             <p class="mt-2 text-gray-500">Five Microservices running independently for **Fault Tolerance**</p>
         </header>
 
-        <main class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Node 2: Auth Service -->
+        <!-- CHANGE: Updated lg:grid-cols-3 to lg:grid-cols-2 for a more balanced 2-2-1 layout for 5 cards -->
+        <main class="grid md:grid-cols-2 lg:grid-cols-2 gap-6"> 
+            <!-- Node 1: Auth Service (Port 5001) -->
             <div class="service-card bg-white p-6 rounded-lg shadow-md border-t-4 border-indigo-500">
-                <h2 class="text-xl font-semibold text-gray-800">Login/Session (Node 2: 5001)</h2>
+                <h2 class="text-xl font-semibold text-gray-800">Login/Session (Node 1: 5001)</h2>
                 <p class="mt-2 text-gray-600 text-sm">Handles user authentication (JWT/OAuth) and session tracking across all nodes.</p>
                 <a href="/login" class="mt-4 inline-block text-indigo-600 hover:text-indigo-800 font-medium">
                     Go to Login &rarr;
                 </a>
             </div>
 
-            <!-- Node 3: Course Service -->
+            <!-- Node 2: Course Catalog Service (Port 5002) -->
             <div class="service-card bg-white p-6 rounded-lg shadow-md border-t-4 border-green-500">
-                <h2 class="text-xl font-semibold text-gray-800">Courses & Enrollment (Node 3: 5002)</h2>
-                <p class="mt-2 text-gray-600 text-sm">Manages course availability and student registration logic.</p>
+                <h2 class="text-xl font-semibold text-gray-800">Course Catalog (Node 2: 5002)</h2>
+                <p class="mt-2 text-gray-600 text-sm">Manages course availability and static catalog viewing (Read optimized).</p>
                 <a href="/courses" class="mt-4 inline-block text-green-600 hover:text-green-800 font-medium">
-                    View Courses & Enroll &rarr;
+                    View Courses &rarr;
+                </a>
+            </div>
+            
+            <!-- Node 3: Enrollment Processor (Port 5003) -->
+            <div class="service-card bg-white p-6 rounded-lg shadow-md border-t-4 border-orange-500">
+                <h2 class="text-xl font-semibold text-gray-800">Enrollment Processor (Node 3: 5003)</h2>
+                <p class="mt-2 text-gray-600 text-sm">Dedicated service for transactional student registration (Write optimized).</p>
+                <a href="/enroll" class="mt-4 inline-block text-orange-600 hover:text-orange-800 font-medium">
+                    Enroll in Courses &rarr;
                 </a>
             </div>
 
@@ -56,7 +66,8 @@
                 </a>
             </div>
             
-            <div class="lg:col-span-3 mt-4 p-6 bg-yellow-100 border border-yellow-300 rounded-lg shadow-inner">
+            <!-- CHANGE: Updated lg:col-span-3 to lg:col-span-2 to match the new grid size -->
+            <div class="lg:col-span-2 mt-4 p-6 bg-yellow-100 border border-yellow-300 rounded-lg shadow-inner">
                 <h3 class="text-lg font-semibold text-yellow-800">Fault Tolerance Test Concept</h3>
                 <p class="text-sm text-yellow-700 mt-2">
                     To test fault tolerance, run all 5 Python files, then stop one of the backend services (e.g., kill the process running on Port 5002). The features relying on that service will fail, but the others (e.g., Node 4/5) will remain fully accessible.
