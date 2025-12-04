@@ -45,6 +45,11 @@ class EnrollmentServiceStub(object):
                 request_serializer=enrollment__pb2.StudentRequest.SerializeToString,
                 response_deserializer=enrollment__pb2.EnrollmentsResponse.FromString,
                 _registered_method=True)
+        self.DropFromCourse = channel.unary_unary(
+                '/enrollment.EnrollmentService/DropFromCourse',
+                request_serializer=enrollment__pb2.DropRequest.SerializeToString,
+                response_deserializer=enrollment__pb2.DropResponse.FromString,
+                _registered_method=True)
 
 
 class EnrollmentServiceServicer(object):
@@ -65,6 +70,14 @@ class EnrollmentServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def DropFromCourse(self, request, context):
+        """Drop a student from a course
+        NEW RPC
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_EnrollmentServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -77,6 +90,11 @@ def add_EnrollmentServiceServicer_to_server(servicer, server):
                     servicer.GetStudentEnrollments,
                     request_deserializer=enrollment__pb2.StudentRequest.FromString,
                     response_serializer=enrollment__pb2.EnrollmentsResponse.SerializeToString,
+            ),
+            'DropFromCourse': grpc.unary_unary_rpc_method_handler(
+                    servicer.DropFromCourse,
+                    request_deserializer=enrollment__pb2.DropRequest.FromString,
+                    response_serializer=enrollment__pb2.DropResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -134,6 +152,33 @@ class EnrollmentService(object):
             '/enrollment.EnrollmentService/GetStudentEnrollments',
             enrollment__pb2.StudentRequest.SerializeToString,
             enrollment__pb2.EnrollmentsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DropFromCourse(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/enrollment.EnrollmentService/DropFromCourse',
+            enrollment__pb2.DropRequest.SerializeToString,
+            enrollment__pb2.DropResponse.FromString,
             options,
             channel_credentials,
             insecure,

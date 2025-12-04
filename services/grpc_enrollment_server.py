@@ -213,6 +213,80 @@ class EnrollmentServiceServicer(enrollment_pb2_grpc.EnrollmentServiceServicer):
             if conn:
                 conn.close()
 
+    def DropFromCourse(self, request, context): # NEW METHOD
+        token = request.token
+        course_id = request.course_id
+
+        # Validate token with auth service
+        auth_result = validate_token_with_auth_service(token)
+        
+        if not auth_result.get('valid'):
+            return enrollment_pb2.DropResponse(
+                status="error",
+                message=f"Authentication failed: {auth_result.get('message', 'Invalid token')}"
+            )
+
+        user_id = auth_result['user_id']
+        user_role = auth_result['role']
+
+        # Check if user is a student
+        if user_role != 'student':
+            return enrollment_pb2.DropResponse(
+                status="rejected",
+                message=f"Only students can drop a course. Your role is '{user_role}'"
+            )
+
+        # Get database connection
+        conn = get_db_connection()
+        if conn is None:
+            return enrollment_pb2.DropResponse(
+                status="error",
+                message="Database is unavailable"
+            )
+
+        try:
+            cur = conn.cursor(cursor_factory=DictCursor)
+
+            # Check if enrolled
+            cur.execute("SELECT 1 FROM enrollments WHERE student_public_id = %s AND course_id = %s;", 
+                        (user_id, course_id))
+            if cur.fetchone() is None:
+                return enrollment_pb2.DropResponse(
+                    status="error",
+                    message=f"You are not enrolled in course {course_id}"
+                )
+
+            # Get course name before dropping
+            cur.execute("SELECT name FROM courses WHERE course_id = %s;", (course_id,))
+            course = cur.fetchone()
+            course_name = course['name'] if course else course_id
+
+            # Drop the student
+            cur.execute("DELETE FROM enrollments WHERE student_public_id = %s AND course_id = %s;", 
+                        (user_id, course_id))
+            # Decrement enrolled count
+            cur.execute("UPDATE courses SET enrolled = enrolled - 1 WHERE course_id = %s AND enrolled > 0;", 
+                        (course_id,))
+
+            conn.commit()
+            print(f"User {user_id} successfully dropped from {course_id}")
+            
+            return enrollment_pb2.DropResponse(
+                status="success",
+                message=f"Successfully dropped from {course_name}."
+            )
+
+        except Exception as e:
+            conn.rollback()
+            print(f"Drop error: {e}")
+            return enrollment_pb2.DropResponse(
+                status="error",
+                message="An internal error occurred during drop process"
+            )
+        finally:
+            if conn:
+                conn.close()
+
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     enrollment_pb2_grpc.add_EnrollmentServiceServicer_to_server(EnrollmentServiceServicer(), server)

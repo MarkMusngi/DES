@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10\x65nrollment.proto\x12\nenrollment\"1\n\rEnrollRequest\x12\r\n\x05token\x18\x01 \x01(\t\x12\x11\n\tcourse_id\x18\x02 \x01(\t\"\x1f\n\x0eStudentRequest\x12\r\n\x05token\x18\x01 \x01(\t\"1\n\x0e\x45nrollResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\"Q\n\x0e\x45nrollmentInfo\x12\x11\n\tcourse_id\x18\x01 \x01(\t\x12\x13\n\x0b\x63ourse_name\x18\x02 \x01(\t\x12\x17\n\x0f\x65nrollment_date\x18\x03 \x01(\t\"g\n\x13\x45nrollmentsResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12/\n\x0b\x65nrollments\x18\x03 \x03(\x0b\x32\x1a.enrollment.EnrollmentInfo2\xb2\x01\n\x11\x45nrollmentService\x12G\n\x0e\x45nrollInCourse\x12\x19.enrollment.EnrollRequest\x1a\x1a.enrollment.EnrollResponse\x12T\n\x15GetStudentEnrollments\x12\x1a.enrollment.StudentRequest\x1a\x1f.enrollment.EnrollmentsResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10\x65nrollment.proto\x12\nenrollment\"1\n\rEnrollRequest\x12\r\n\x05token\x18\x01 \x01(\t\x12\x11\n\tcourse_id\x18\x02 \x01(\t\"\x1f\n\x0eStudentRequest\x12\r\n\x05token\x18\x01 \x01(\t\"/\n\x0b\x44ropRequest\x12\r\n\x05token\x18\x01 \x01(\t\x12\x11\n\tcourse_id\x18\x02 \x01(\t\"1\n\x0e\x45nrollResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\"/\n\x0c\x44ropResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\"Q\n\x0e\x45nrollmentInfo\x12\x11\n\tcourse_id\x18\x01 \x01(\t\x12\x13\n\x0b\x63ourse_name\x18\x02 \x01(\t\x12\x17\n\x0f\x65nrollment_date\x18\x03 \x01(\t\"g\n\x13\x45nrollmentsResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12/\n\x0b\x65nrollments\x18\x03 \x03(\x0b\x32\x1a.enrollment.EnrollmentInfo2\xf7\x01\n\x11\x45nrollmentService\x12G\n\x0e\x45nrollInCourse\x12\x19.enrollment.EnrollRequest\x1a\x1a.enrollment.EnrollResponse\x12T\n\x15GetStudentEnrollments\x12\x1a.enrollment.StudentRequest\x1a\x1f.enrollment.EnrollmentsResponse\x12\x43\n\x0e\x44ropFromCourse\x12\x17.enrollment.DropRequest\x1a\x18.enrollment.DropResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -35,12 +35,16 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_ENROLLREQUEST']._serialized_end=81
   _globals['_STUDENTREQUEST']._serialized_start=83
   _globals['_STUDENTREQUEST']._serialized_end=114
-  _globals['_ENROLLRESPONSE']._serialized_start=116
-  _globals['_ENROLLRESPONSE']._serialized_end=165
-  _globals['_ENROLLMENTINFO']._serialized_start=167
-  _globals['_ENROLLMENTINFO']._serialized_end=248
-  _globals['_ENROLLMENTSRESPONSE']._serialized_start=250
-  _globals['_ENROLLMENTSRESPONSE']._serialized_end=353
-  _globals['_ENROLLMENTSERVICE']._serialized_start=356
-  _globals['_ENROLLMENTSERVICE']._serialized_end=534
+  _globals['_DROPREQUEST']._serialized_start=116
+  _globals['_DROPREQUEST']._serialized_end=163
+  _globals['_ENROLLRESPONSE']._serialized_start=165
+  _globals['_ENROLLRESPONSE']._serialized_end=214
+  _globals['_DROPRESPONSE']._serialized_start=216
+  _globals['_DROPRESPONSE']._serialized_end=263
+  _globals['_ENROLLMENTINFO']._serialized_start=265
+  _globals['_ENROLLMENTINFO']._serialized_end=346
+  _globals['_ENROLLMENTSRESPONSE']._serialized_start=348
+  _globals['_ENROLLMENTSRESPONSE']._serialized_end=451
+  _globals['_ENROLLMENTSERVICE']._serialized_start=454
+  _globals['_ENROLLMENTSERVICE']._serialized_end=701
 # @@protoc_insertion_point(module_scope)

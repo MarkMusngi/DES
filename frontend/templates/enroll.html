@@ -57,7 +57,13 @@
                 Available courses: CS101, MATH203, ENG100, GERIZAL, GEETHIC
             </p>
         </div>
-
+        
+        <div class="mt-8 p-6 bg-gray-100 rounded-lg border border-gray-300">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Your Current Enrollments</h2>
+            <div id="enrollmentsList" class="space-y-3">
+                <p id="loadingEnrollments" class="text-sm text-gray-500">Loading enrollments...</p>
+                </div>
+        </div>
         <div class="mt-6 flex flex-col space-y-3">
             <a href="/courses" class="text-center text-sm text-gray-600 hover:text-gray-800 font-medium">
                 &larr; Back to Course Catalog
@@ -68,6 +74,8 @@
 
 <script>
     const enrollmentServiceUrl = 'http://localhost:5001/api/v1/enroll/course';
+    const enrollmentsApiUrl = 'http://localhost:5001/api/v1/enroll/student'; // Updated to match REST Gateway
+    const dropCourseApiUrl = 'http://localhost:5001/api/v1/enroll/drop'; // New drop endpoint
     
     // Get parameters from URL (if redirected from courses page)
     const urlParams = new URLSearchParams(window.location.search);
@@ -105,6 +113,119 @@
         return localStorage.getItem('user_id');
     }
 
+    // New: Function to load and display enrolled courses
+    async function loadStudentEnrollments() {
+        const token = getToken();
+        const enrollmentsListEl = document.getElementById('enrollmentsList');
+        enrollmentsListEl.innerHTML = '<p id="loadingEnrollments" class="text-sm text-gray-500">Loading enrollments...</p>';
+
+        if (!token) {
+            enrollmentsListEl.innerHTML = '<p class="text-sm text-red-500">Cannot load enrollments. Please log in.</p>';
+            return;
+        }
+
+        try {
+            const response = await fetch(enrollmentsApiUrl, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            let data;
+            try {
+                data = await response.json();
+            } catch (e) {
+                data = { message: response.statusText, enrollments: [] };
+            }
+
+            if (response.ok && data.status === 'success') {
+                const enrollments = data.enrollments || [];
+                
+                if (enrollments.length === 0) {
+                    enrollmentsListEl.innerHTML = '<p class="text-sm text-gray-500">You are not currently enrolled in any courses.</p>';
+                    return;
+                }
+
+                enrollmentsListEl.innerHTML = ''; // Clear loading message
+
+                enrollments.forEach(enrollment => {
+                    const date = new Date(enrollment.enrollment_date).toLocaleDateString();
+                    const item = document.createElement('div');
+                    item.className = 'flex justify-between items-center p-3 bg-white rounded-lg shadow-sm border border-gray-200';
+                    item.innerHTML = `
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">${enrollment.course_name} (${enrollment.course_id})</p>
+                            <p class="text-xs text-gray-500 mt-0.5">Enrolled on: ${date}</p>
+                        </div>
+                        <button 
+                            onclick="dropCourse('${enrollment.course_id}', '${enrollment.course_name}')"
+                            class="py-1 px-3 bg-red-500 text-white text-xs font-semibold rounded hover:bg-red-600 transition duration-150"
+                        >
+                            Drop
+                        </button>
+                    `;
+                    enrollmentsListEl.appendChild(item);
+                });
+            } else {
+                enrollmentsListEl.innerHTML = `<p class="text-sm text-red-500">Error loading enrollments: ${data.message || 'Unknown error'}</p>`;
+            }
+
+        } catch (error) {
+            console.error('Enrollments network error:', error);
+            enrollmentsListEl.innerHTML = '<p class="text-sm text-red-500">Network error: Could not connect to enrollment service. Make sure the REST Gateway is running.</p>';
+        }
+    }
+
+    // New: Function to handle course dropping
+    async function dropCourse(courseId, courseName) {
+        if (!confirm(`Are you sure you want to drop the course: ${courseName} (${courseId})? This action cannot be undone.`)) {
+            return;
+        }
+
+        const token = getToken();
+        if (!token) {
+            showStatus('Authentication required. Please log in.', 'error');
+            setTimeout(() => { window.location.href = '/auth.html'; }, 2000);
+            return;
+        }
+        
+        showStatus(`Processing drop request for ${courseId}...`, 'info');
+
+        try {
+            const response = await fetch(`${dropCourseApiUrl}/${encodeURIComponent(courseId)}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            let data;
+            try {
+                data = await response.json();
+            } catch (e) {
+                data = { message: response.statusText };
+            }
+            
+            if (response.ok) {
+                showStatus(`✓ ${data.message || 'Course dropped successfully.'}`, 'success');
+                // Reload the enrollments list after a successful drop
+                loadStudentEnrollments();
+                // Clear the enrollment form input if it matches the dropped course
+                if (document.getElementById('courseIdInput').value.trim().toUpperCase() === courseId) {
+                    document.getElementById('courseIdInput').value = '';
+                }
+            } else {
+                showStatus(`Drop failed: ${data.message || 'Unknown error'}`, 'error');
+            }
+
+        } catch (error) {
+            console.error('Drop network error:', error);
+            showStatus('Network error: Could not reach Enrollment Service.', 'error');
+        }
+    }
+
+
     // Check if user is logged in and is a student on page load
     window.addEventListener('DOMContentLoaded', () => {
         const token = getToken();
@@ -125,13 +246,15 @@
         }
 
         if (role !== 'student') {
-            showStatus(`Only students can enroll. Your role is "${role}". Redirecting...`, 'error');
+            showStatus(`Only students can enroll and drop. Your role is "${role}". Redirecting...`, 'error');
             document.getElementById('enrollBtn').disabled = true;
             document.getElementById('courseIdInput').disabled = true;
             setTimeout(() => {
                 window.location.href = '/courses';
             }, 3000);
-            return;
+        } else {
+            // New: Load enrollments only for students
+            loadStudentEnrollments();
         }
 
         // Pre-fill course ID if coming from courses page
@@ -192,9 +315,11 @@
 
             if (response.ok) {
                 showStatus(`✓ ${data.message || 'Enrollment successful!'}`, 'success');
-                setTimeout(() => {
-                    window.location.href = '/courses';
-                }, 2000);
+                // MODIFIED: Reload enrollments instead of redirecting
+                loadStudentEnrollments();
+                enrollBtn.disabled = false;
+                enrollBtn.textContent = 'Confirm Enrollment';
+                document.getElementById('courseIdInput').disabled = false;
             } else {
                 // Re-enable form on error
                 enrollBtn.disabled = false;

@@ -182,8 +182,9 @@ def enroll_in_course(course_id):
     except grpc.RpcError as e:
         return jsonify({"status": "error", "message": "Enrollment service unavailable"}), 503
 
-@app.route('/api/v1/enrollments', methods=['GET'])
-def get_enrollments():
+# REPLACED: @app.route('/api/v1/enrollments', methods=['GET'])
+@app.route('/api/v1/enroll/student', methods=['GET']) # NEW ROUTE FOR CONSISTENCY
+def get_student_enrollments():
     token = request.headers.get('Authorization')
     if token and token.startswith('Bearer '):
         token = token[7:]
@@ -208,6 +209,33 @@ def get_enrollments():
                     "status": "success",
                     "enrollments": enrollments
                 }), 200
+            else:
+                return jsonify({"status": response.status, "message": response.message}), 400
+    except grpc.RpcError as e:
+        return jsonify({"status": "error", "message": "Enrollment service unavailable"}), 503
+
+
+@app.route('/api/v1/enroll/drop/<course_id>', methods=['DELETE']) # NEW DROP ENDPOINT
+def drop_course(course_id):
+    token = request.headers.get('Authorization')
+    if token and token.startswith('Bearer '):
+        token = token[7:]
+    
+    if not token:
+        return jsonify({"status": "error", "message": "Token missing"}), 401
+    
+    try:
+        with grpc.insecure_channel(ENROLLMENT_GRPC) as channel:
+            stub = enrollment_pb2_grpc.EnrollmentServiceStub(channel)
+            response = stub.DropFromCourse(enrollment_pb2.DropRequest(
+                token=token,
+                course_id=course_id
+            ))
+            
+            if response.status == "success":
+                return jsonify({"status": response.status, "message": response.message}), 200
+            elif response.status == "rejected":
+                return jsonify({"status": response.status, "message": response.message}), 403
             else:
                 return jsonify({"status": response.status, "message": response.message}), 400
     except grpc.RpcError as e:
