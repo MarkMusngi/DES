@@ -27,6 +27,7 @@ message CourseInfo {
     int32 capacity = 3;
     int32 enrolled = 4;
     bool is_open = 5;
+    // Faculty fields and ClaimCourse messages must be removed.
 }
 
 message GetCoursesResponse {
@@ -39,21 +40,4 @@ message CourseResponse {
     string status = 1;
     string message = 2;
     CourseInfo course = 3;
-}
-
-message CourseInfo {
-
-string faculty_id = 6;
-string faculty_username = 7;
-}
-
-message ClaimCourseRequest {
-string course_id = 1;
-string faculty_id = 2;
-string faculty_username = 3;
-}
-
-message ClaimCourseResponse {
-string status = 1;
-string message = 2;
 }

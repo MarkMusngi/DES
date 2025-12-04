@@ -23,7 +23,7 @@ AUTH_GRPC = 'localhost:50051'
 COURSE_GRPC = 'localhost:50052'
 ENROLLMENT_GRPC = 'localhost:50053'
 GRADES_GRPC = 'localhost:50054'
-FACULTY_GRADES_GRPC = 'localhost:50055' 
+FACULTY_GRADES_GRPC = 'localhost:50055'
 
 # ============= AUTH ENDPOINTS =============
 
@@ -294,7 +294,7 @@ def get_my_grades():
 
 @app.route('/api/v1/grades/upload', methods=['POST'])
 def upload_grade():
-    """Faculty uploads a grade (Legacy endpoint - redirects to faculty service)"""
+    """Faculty uploads a grade"""
     token = request.headers.get('Authorization')
     if token and token.startswith('Bearer '):
         token = token[7:]

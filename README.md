@@ -9,6 +9,8 @@ python -m grpc_tools.protoc -I./proto --python_out=./generated --grpc_python_out
 
 python -m grpc_tools.protoc -I./proto --python_out=./generated --grpc_python_out=./generated ./proto/grades.proto
 
+python -m grpc_tools.protoc -I./proto --python_out=./generated --grpc_python_out=./generated ./proto/faculty_grades.proto 
+
 psql -U postgres
 CREATE DATABASE student_portal_auth;
 CREATE DATABASE student_portal_courses;
@@ -20,4 +22,6 @@ python app_view.py
 python grpc_auth_server.py
 python grpc_course_server.py
 python grpc_enrollment_server.py
+python grpc_grades_server.py
+python grpc_faculty_grades_server.py
 python rest_gateway.py
