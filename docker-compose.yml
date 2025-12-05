@@ -1,0 +1,216 @@
+version: '3.8'
+
+services:
+  # 1. The PostgreSQL Database Container
+  postgres_db:
+    image: postgres:15-alpine
+    container_name: student_portal_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: student_portal_auth # Initial DB name
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-dbs.sql:/docker-entrypoint-initdb.d/init-dbs.sql 
+    
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"] 
+      interval: 5s 
+      timeout: 5s 
+      retries: 5 
+      start_period: 10s 
+
+    # --- NETWORK CONFIGURATION ---
+    networks:
+      student_portal_network:
+        ipv4_address: 172.25.0.10 # Static IP for DB
+
+  # 2. Authentication gRPC Service (Port 50051)
+  auth_service:
+    build:
+      context: .
+      dockerfile: auth_service/Dockerfile
+    container_name: grpc_auth_service
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres_db
+      POSTGRES_DB: student_portal_auth
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_PORT: 5432
+      JWT_SECRET_KEY: super_secret_auth_key_12345
+      JWT_EXPIRATION_HOURS: 24
+    ports:
+      - "50051:50051"
+      
+    # --- NETWORK CONFIGURATION ---
+    networks:
+      student_portal_network:
+        ipv4_address: 172.25.0.11 # Static IP for Auth
+
+  # 3. Course gRPC Service (Port 50052)
+  course_service:
+    build:
+      context: .
+      dockerfile: course_service/Dockerfile
+    container_name: grpc_course_service
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres_db
+      POSTGRES_DB: student_portal_courses
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_PORT: 5432
+    ports:
+      - "50052:50052"
+      
+    # --- NETWORK CONFIGURATION ---
+    networks:
+      student_portal_network:
+        ipv4_address: 172.25.0.12 # Static IP for Course
+
+  # 4. Enrollment gRPC Service (Port 50053)
+  enrollment_service:
+    build:
+      context: .
+      dockerfile: enrollment_service/Dockerfile
+    container_name: grpc_enrollment_service
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+      auth_service:
+        condition: service_started
+      course_service:
+        condition: service_started
+    environment:
+      POSTGRES_HOST: postgres_db
+      POSTGRES_DB: student_portal_courses
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_PORT: 5432
+      AUTH_GRPC_HOST: auth_service:50051
+      # --- ADDED: JWT Secret Key for local validation ---
+      JWT_SECRET_KEY: super_secret_auth_key_12345 
+    ports:
+      - "50053:50053"
+      
+    # --- NETWORK CONFIGURATION ---
+    networks:
+      student_portal_network:
+        ipv4_address: 172.25.0.13 # Static IP for Enrollment
+
+  # 5. Grades gRPC Service (Port 50054)
+  grades_service:
+    build:
+      context: .
+      dockerfile: grades_service/Dockerfile
+    container_name: grpc_grades_service
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+      auth_service:
+        condition: service_started
+    environment:
+      POSTGRES_HOST: postgres_db
+      POSTGRES_DB: student_portal_grades
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_PORT: 5432
+      AUTH_GRPC_HOST: auth_service:50051
+    ports:
+      - "50054:50054"
+      
+    # --- NETWORK CONFIGURATION ---
+    networks:
+      student_portal_network:
+        ipv4_address: 172.25.0.14 # Static IP for Grades
+
+  # 6. Faculty Grades gRPC Service (Port 50055)
+  faculty_grades_service:
+    build:
+      context: .
+      dockerfile: faculty_grades_service/Dockerfile
+    container_name: grpc_faculty_grades_service
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+      auth_service:
+        condition: service_started
+    environment:
+      POSTGRES_HOST: postgres_db
+      POSTGRES_DB: student_portal_grades
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_PORT: 5432
+      AUTH_GRPC_HOST: auth_service:50051
+    ports:
+      - "50055:50055"
+      
+    # --- NETWORK CONFIGURATION ---
+    networks:
+      student_portal_network:
+        ipv4_address: 172.25.0.15 # Static IP for Faculty Grades
+
+  # 7. REST Gateway (Flask App - Port 5001)
+  rest_gateway:
+    build:
+      context: .
+      dockerfile: rest_gateway/Dockerfile
+    container_name: rest_gateway_service
+    environment:
+      # Note: We still use service names here, but can also use IPs (e.g., 172.25.0.11:50051)
+      AUTH_GRPC_HOST: auth_service:50051
+      COURSE_GRPC_HOST: course_service:50052
+      ENROLLMENT_GRPC_HOST: enrollment_service:50053
+      GRADES_GRPC_HOST: grades_service:50054
+      FACULTY_GRADES_GRPC_HOST: faculty_grades_service:50055
+    ports:
+      - "5001:5001"
+      
+    # --- NETWORK CONFIGURATION ---
+    networks:
+      student_portal_network:
+        ipv4_address: 172.25.0.20 # Static IP for REST Gateway
+
+  # 8. View Server (Flask App - Port 5000)
+  view_server:
+    build:
+      context: .
+      dockerfile: view_server/Dockerfile
+    container_name: view_server_service
+    depends_on:
+      rest_gateway:
+        condition: service_started
+    environment:
+      # REST_GATEWAY_URL uses the service name (rest_gateway) which is resolved to its IP (172.25.0.20)
+      REST_GATEWAY_URL: http://rest_gateway:5001/api/v1
+      JWT_SECRET_KEY: super_secret_auth_key_12345
+    ports:
+      - "5000:5000"
+      
+    # --- NETWORK CONFIGURATION ---
+    networks:
+      student_portal_network:
+        ipv4_address: 172.25.0.21 # Static IP for View Server
+
+volumes:
+  postgres_data:
+
+# ==========================================================
+# DEFINE CUSTOM NETWORK
+# ==========================================================
+networks:
+  student_portal_network:
+    driver: bridge
+    ipam:
+      config:
+        # Define the subnet and gateway for the internal network
+        - subnet: 172.25.0.0/24
+          gateway: 172.25.0.1
