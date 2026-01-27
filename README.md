@@ -1,3 +1,5 @@
+Distributed Enrollment System
+
 Initialize the proto files using these command
 cd services
 mkdir -p generated
