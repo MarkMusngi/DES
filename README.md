@@ -1,4 +1,4 @@
-# EduStream Distributed Student Portal
+# Distributed Enrollment System
 
 A robust, microservices-based academic platform designed for high-performance student and faculty management. The system utilizes a distributed node architecture, separating concerns across specialized gRPC servers.
 
